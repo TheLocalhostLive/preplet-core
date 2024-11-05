@@ -20,4 +20,8 @@ public class ChapterService {
     public List<ChapterDto> getAllChapters(){
         return chapterRepository.findAll().stream().map(ChapterMapper::toDto).collect(Collectors.toList());
     }
+    public ChapterDto getChapterById(Long id){
+        return ChapterMapper.toDto(chapterRepository.findById(id).orElseThrow(()->new RuntimeException("Chapter Not Found")));
+
+    }
 }

@@ -2,9 +2,11 @@ package live.thelocalhost.preplet_backend_v2.service;
 
 import live.thelocalhost.preplet_backend_v2.dto.QuestionDto;
 import live.thelocalhost.preplet_backend_v2.dto.QuestionGetDto;
+import live.thelocalhost.preplet_backend_v2.entity.Chapter;
 import live.thelocalhost.preplet_backend_v2.entity.Course;
 import live.thelocalhost.preplet_backend_v2.entity.Question;
 import live.thelocalhost.preplet_backend_v2.entity.Subject;
+import live.thelocalhost.preplet_backend_v2.mapper.ChapterMapper;
 import live.thelocalhost.preplet_backend_v2.mapper.QuestionMapper;
 import live.thelocalhost.preplet_backend_v2.native_query_schemas.QuestionGetDtoNative;
 import live.thelocalhost.preplet_backend_v2.repository.QuestionRepository;
@@ -23,11 +25,14 @@ public class QuestionService {
     private SubjectService subjectService;
     @Autowired
     private  CourseService courseService;
+    @Autowired
+    private ChapterService chapterService;
 
     public QuestionGetDto create(QuestionDto questionDto){
         Subject subject = subjectService.getSubjectById(questionDto.getSubjectId());
         Course course = courseService.getCouseById(questionDto.getCourseId());
-        Question question = QuestionMapper.fromDto(questionDto,subject,course);
+        Chapter chapter = ChapterMapper.fromDto(chapterService.getChapterById(questionDto.getId()));
+        Question question = QuestionMapper.fromDto(questionDto,subject,course,chapter);
         Question savedQuestion =  questionRepository.save(question);
         QuestionGetDtoNative questionGetDtoNative = questionRepository.getQuestionById(savedQuestion.getId());
         return new QuestionGetDto(
@@ -50,17 +55,6 @@ public class QuestionService {
                 q.getYear(),
                 q.getQuestionBody()
         )).collect(Collectors.toList());
-//        List<QuestionGetDto> resultList = new ArrayList<>();
-//        for (QuestionGetDtoNative nativeResult : nativeResults) {
-//            resultList.add(new QuestionGetDto(
-//                    nativeResult.getId(),
-//                    nativeResult.getCourseName(),
-//                    nativeResult.getSubjectName(),
-//                    nativeResult.getYear(),
-//                    nativeResult.getQuestionBody()
-//            ));
-//        }
-//        return resultList;
     }
 
 }
