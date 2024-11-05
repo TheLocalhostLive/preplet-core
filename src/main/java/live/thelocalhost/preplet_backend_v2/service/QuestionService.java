@@ -34,7 +34,7 @@ public class QuestionService {
         System.out.println("DTO-course: "+questionDto.getCourseId());
         Subject subject = subjectService.getSubjectById(questionDto.getSubjectId());
         System.out.println("Service-subject: "+subject.getId());
-        Course course = courseService.getCouseById(questionDto.getCourseId());
+        Course course = courseService.getCourseById(questionDto.getCourseId());
         System.out.println("Service-course: "+course.getId());
         Chapter chapter = ChapterMapper.fromDto(chapterService.getChapterById(questionDto.getChapterId()));
         System.out.println("Service-chapter: "+chapter.getId());

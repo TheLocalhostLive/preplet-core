@@ -3,6 +3,7 @@ package live.thelocalhost.preplet_backend_v2.controller;
 
 import live.thelocalhost.preplet_backend_v2.dto.CourseDto;
 import live.thelocalhost.preplet_backend_v2.dto.UserDto;
+import live.thelocalhost.preplet_backend_v2.mapper.CourseMapper;
 import live.thelocalhost.preplet_backend_v2.service.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,13 @@ public class CourseManager {
         CourseDto savedCourse = courseService.create(courseDto);
         return new ResponseEntity<>(savedCourse,HttpStatus.CREATED);
     }
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CourseDto>> getAllCourse(){
         List<CourseDto> courseDtoList = courseService.getAllCourse();
         return new ResponseEntity<>(courseDtoList,HttpStatus.OK);
+    }
+    @GetMapping("/by-id")
+    public  ResponseEntity<CourseDto> getCourseById(@RequestParam Long id){
+        return new ResponseEntity<>(CourseMapper.toDto(courseService.getCourseById(id)),HttpStatus.OK);
     }
 }

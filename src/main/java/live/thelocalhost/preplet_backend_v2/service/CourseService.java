@@ -22,7 +22,7 @@ public class CourseService {
     public List<CourseDto> getAllCourse(){
         return courseRepository.findAll().stream().map(CourseMapper::toDto).collect(Collectors.toList());
     }
-    public Course getCouseById(Long courseId){
+    public Course getCourseById(Long courseId){
         return courseRepository.findById(courseId).orElseThrow(()->new RuntimeException("Course Not Found"));
     }
 }
