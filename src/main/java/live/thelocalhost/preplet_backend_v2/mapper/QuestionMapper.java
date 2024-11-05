@@ -17,7 +17,7 @@ public class QuestionMapper {
                 question.getId(),
                 question.getCourse().getId(),
                 question.getSubject().getId(),
-                question.getCourse().getId(),
+                question.getChapter().getId(),
                 question.getYear(),
                 question.getQuestionBody()
         );

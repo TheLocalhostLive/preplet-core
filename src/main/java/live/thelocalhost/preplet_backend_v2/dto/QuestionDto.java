@@ -18,7 +18,7 @@ import lombok.Setter;
 public class QuestionDto {
     private Long id;
     private Long courseId;
-    private Long SubjectId;
+    private Long subjectId;
     private Long chapterId;
     Integer year;
     String questionBody;

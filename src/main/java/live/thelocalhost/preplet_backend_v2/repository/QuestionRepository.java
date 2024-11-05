@@ -70,4 +70,14 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             nativeQuery = true
     )
     List<QuestionGetDtoNative> findQuestionsBySubjectIdAndChapterId(@Param("subjectId") Long subjectId,@Param("chapterId") Long chapterId);
+
+    @Query(value = "SELECT q.id AS id,  c.course_name As courseName , s.subject_name AS subjectName ,cp.chapter_name AS chapterName,q.year AS year , q.question_body AS questionBody "+
+            "FROM question q " +
+            "JOIN course c ON q.course_id = c.id " +
+            "JOIN subject s ON q.subject_id = s.id " +
+            "JOIN chapter cp ON q.chapter_id = cp.id " +
+            "WHERE q.year =:year",
+            nativeQuery = true
+    )
+    List<QuestionGetDtoNative> findQuestionsByYear(@Param("year") Integer year);
 }
