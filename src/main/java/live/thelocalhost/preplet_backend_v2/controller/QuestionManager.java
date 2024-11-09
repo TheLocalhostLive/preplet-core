@@ -2,8 +2,10 @@ package live.thelocalhost.preplet_backend_v2.controller;
 
 
 import jakarta.persistence.Entity;
+import live.thelocalhost.preplet_backend_v2.dto.QuestionAnswerDto;
 import live.thelocalhost.preplet_backend_v2.dto.QuestionDto;
 import live.thelocalhost.preplet_backend_v2.dto.QuestionGetDto;
+import live.thelocalhost.preplet_backend_v2.dto.QuestionOptionDto;
 import live.thelocalhost.preplet_backend_v2.service.QuestionService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,14 @@ public class QuestionManager {
         QuestionGetDto questionGetDto = questionService.create(questionDto);
 
         return new ResponseEntity<>(questionGetDto,HttpStatus.CREATED);
+    }
+    @PostMapping("/question-option")
+    public ResponseEntity<QuestionOptionDto> create(@RequestBody QuestionOptionDto questionOptionDto){
+        return new ResponseEntity<>(questionService.createOption(questionOptionDto), HttpStatus.CREATED);
+    }
+    @PostMapping("/question-answer")
+    public ResponseEntity<QuestionAnswerDto> create(@RequestBody QuestionAnswerDto questionAnswerDto){
+        return new ResponseEntity<>(questionService.createAnswer(questionAnswerDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")

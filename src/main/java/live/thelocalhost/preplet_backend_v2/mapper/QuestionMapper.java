@@ -10,6 +10,8 @@ import live.thelocalhost.preplet_backend_v2.service.CourseService;
 import live.thelocalhost.preplet_backend_v2.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 public class QuestionMapper {
 
     public  static QuestionDto toDto(Question question){
@@ -33,14 +35,16 @@ public class QuestionMapper {
                 questionDto.getQuestionBody()
         );
     }
-    public static QuestionGetDto toDto(Question question , String courseName, String subjectName,String chapterName){
+    public static QuestionGetDto toDto(Question question , String courseName, String subjectName, String chapterName , List<String> answers,List<String> options){
             return new QuestionGetDto(
                     question.getId(),
                     courseName,
                     subjectName,
                     chapterName,
                     question.getYear(),
-                    question.getQuestionBody()
+                    question.getQuestionBody(),
+                    options,
+                    answers
             );
     }
 }

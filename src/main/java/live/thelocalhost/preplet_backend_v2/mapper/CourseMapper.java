@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 public class CourseMapper {
    public static CourseDto toDto(Course course){
         return new CourseDto(

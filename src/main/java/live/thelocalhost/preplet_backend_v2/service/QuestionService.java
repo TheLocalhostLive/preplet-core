@@ -1,15 +1,21 @@
 package live.thelocalhost.preplet_backend_v2.service;
 
+import live.thelocalhost.preplet_backend_v2.dto.QuestionAnswerDto;
 import live.thelocalhost.preplet_backend_v2.dto.QuestionDto;
 import live.thelocalhost.preplet_backend_v2.dto.QuestionGetDto;
-import live.thelocalhost.preplet_backend_v2.entity.Chapter;
-import live.thelocalhost.preplet_backend_v2.entity.Course;
-import live.thelocalhost.preplet_backend_v2.entity.Question;
-import live.thelocalhost.preplet_backend_v2.entity.Subject;
+import live.thelocalhost.preplet_backend_v2.dto.QuestionOptionDto;
+import live.thelocalhost.preplet_backend_v2.entity.*;
 import live.thelocalhost.preplet_backend_v2.mapper.ChapterMapper;
+import live.thelocalhost.preplet_backend_v2.mapper.QuestionAnswerMapper;
 import live.thelocalhost.preplet_backend_v2.mapper.QuestionMapper;
+import live.thelocalhost.preplet_backend_v2.mapper.QuestionOptionMapper;
+import live.thelocalhost.preplet_backend_v2.native_query_schemas.AnswerDtoNative;
+import live.thelocalhost.preplet_backend_v2.native_query_schemas.OptionDtoNative;
 import live.thelocalhost.preplet_backend_v2.native_query_schemas.QuestionGetDtoNative;
+import live.thelocalhost.preplet_backend_v2.repository.QuestionAnswerRepository;
+import live.thelocalhost.preplet_backend_v2.repository.QuestionOptionRepository;
 import live.thelocalhost.preplet_backend_v2.repository.QuestionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +24,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private QuestionAnswerRepository questionAnswerRepository;
+    @Autowired
+    private QuestionOptionRepository questionOptionRepository;
     @Autowired
     private SubjectService subjectService;
     @Autowired
@@ -29,31 +40,28 @@ public class QuestionService {
     private ChapterService chapterService;
 
     public QuestionGetDto create(QuestionDto questionDto){
-        System.out.println("DTO-chapter: "+questionDto.getChapterId());
-        System.out.println("DTO-subject "+questionDto.getSubjectId());
-        System.out.println("DTO-course: "+questionDto.getCourseId());
+
         Subject subject = subjectService.getSubjectById(questionDto.getSubjectId());
-        System.out.println("Service-subject: "+subject.getId());
+
         Course course = courseService.getCourseById(questionDto.getCourseId());
-        System.out.println("Service-course: "+course.getId());
+
         Chapter chapter = ChapterMapper.fromDto(chapterService.getChapterById(questionDto.getChapterId()));
-        System.out.println("Service-chapter: "+chapter.getId());
+
         Question question = QuestionMapper.fromDto(questionDto,subject,course,chapter);
-        System.out.println("Mapper-subject: "+question.getSubject().getId());
-        System.out.println("Mapper-chapter: "+question.getChapter().getId());
-        System.out.println("Mapper-course: "+question.getCourse().getId());
+
         Question savedQuestion =  questionRepository.save(question);
-        System.out.println("Repository: "+savedQuestion.getId());
+
         QuestionGetDtoNative questionGetDtoNative = questionRepository.getQuestionById(savedQuestion.getId());
-        System.out.println("Query-Id: "+questionGetDtoNative.getId());
-        System.out.println("Query-courseName: "+questionGetDtoNative.getCourseName());
+
         return new QuestionGetDto(
                 questionGetDtoNative.getId(),
                 questionGetDtoNative.getCourseName(),
                 questionGetDtoNative.getSubjectName(),
                 questionGetDtoNative.getChapterName(),
                 questionGetDtoNative.getYear(),
-                questionGetDtoNative.getQuestionBody()
+                questionGetDtoNative.getQuestionBody(),
+                getOptionsByQuestionId(questionGetDtoNative.getId()),
+                getAnswerByQuestionId(questionGetDtoNative.getId())
         );
     }
 
@@ -65,7 +73,9 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
     }
     public List<QuestionGetDto> getQuestionsBySubjectId(Long subjectId){
@@ -76,7 +86,9 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
     }
     public List<QuestionGetDto> getQuestionByChapterId(Long chapterId){
@@ -87,10 +99,13 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
     }
     public List<QuestionGetDto> getQuestionBySubjectAndChapter(Long subjectId , Long chapterId){
+
         List<QuestionGetDtoNative> nativeResults = questionRepository.findQuestionsBySubjectIdAndChapterId(subjectId,chapterId);
         return nativeResults.stream().map(q->new QuestionGetDto(
                 q.getId(),
@@ -98,7 +113,9 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
     }
     public List<QuestionGetDto> getQuestionBySubjectAndCourse(Long subjectId , Long courseId){
@@ -109,7 +126,9 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
     }
     public List<QuestionGetDto> getQuestionsByYear(Integer year){
@@ -120,8 +139,45 @@ public class QuestionService {
                 q.getSubjectName(),
                 q.getChapterName(),
                 q.getYear(),
-                q.getQuestionBody()
+                q.getQuestionBody(),
+                getOptionsByQuestionId(q.getId()),
+                getAnswerByQuestionId(q.getId())
         )).collect(Collectors.toList());
+    }
+
+    public Question getQuestionByQuestionId(Long id){
+        return questionRepository.findById(id).orElseThrow(()->new RuntimeException("Question Not Found"));
+    }
+    public QuestionAnswerDto createAnswer(QuestionAnswerDto questionAnswerDto){
+        System.out.println("questionId:"+questionAnswerDto.getQuestionId());
+        Question question = getQuestionByQuestionId(questionAnswerDto.getQuestionId());
+        QuestionAnswer questionAnswer = QuestionAnswerMapper.fromDto(questionAnswerDto,question);
+        return QuestionAnswerMapper.toDto(questionAnswerRepository.save(questionAnswer));
+    }
+    public List<String> getAnswerByQuestionId(Long questionId){
+        return questionAnswerRepository
+                .findAnswersByQuestionId(questionId)
+                .stream()
+                .map(AnswerDtoNative::getAnswer)
+                .collect(Collectors.toList());
+    }
+    public QuestionOptionDto createOption(QuestionOptionDto questionOptionDto){
+        Question question = getQuestionByQuestionId(questionOptionDto.getQuestionId());
+        QuestionOption questionOption = QuestionOptionMapper.fromDto(questionOptionDto,question);
+        return QuestionOptionMapper.toDto(questionOptionRepository.save(questionOption));
+    }
+
+    public List<String> getOptionsByQuestionId(Long questionId){
+        System.out.println("Question Id " + questionId);
+        List<String> options = questionOptionRepository
+                .findOptionsByQuestionId(questionId)
+                .stream()
+                .map(OptionDtoNative::getOptions)
+                .collect(Collectors.toList());
+        for(String op:options){
+            System.out.println(op+" ");
+        }
+        return options;
     }
 
 }

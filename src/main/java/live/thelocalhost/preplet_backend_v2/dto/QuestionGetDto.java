@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -17,4 +19,8 @@ public class QuestionGetDto {
     String chapterName;
     Integer year;
     String questionBody;
+    List<String> options;
+    List<String> answers;
+
+
 }
