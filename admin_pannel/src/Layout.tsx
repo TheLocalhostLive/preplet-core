@@ -1,15 +1,14 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import ResponsiveAppBar from "./components/ResponsiveAppBar";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Sidebar from "./components/SideBar";
 import { DRAWER_WIDTH } from "./constants";
+import { Outlet } from "react-router";
+import { Toolbar } from "@mui/material";
 
-type LayoutProps = {
-  children: ReactElement;
-};
 
-function Layout({ children }: LayoutProps) {
+function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -76,7 +75,8 @@ function Layout({ children }: LayoutProps) {
           width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
         }}
       >
-        {children}
+        <Toolbar />
+        <Outlet />
       </Box>
     </Box>
   );

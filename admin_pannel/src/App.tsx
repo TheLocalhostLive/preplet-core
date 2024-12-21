@@ -1,6 +1,8 @@
 import "./App.css";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import Layout from "./Layout";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import NotFound from "./pages/NotFound";
 import Dummy from "./pages/Dummy";
 
 const darkTheme = createTheme({
@@ -24,12 +26,20 @@ const darkTheme = createTheme({
 });
 
 function App() {
+  const routes = createBrowserRouter([
+    {
+      element: <Layout />,
+      children: [
+        { path: "/dashboard", element: <Dummy /> },
+        { path: "*", element: <NotFound /> }
+      ],
+    },
+  ]);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Layout>
-        <Dummy />
-      </Layout>
+      <RouterProvider router={routes} />
     </ThemeProvider>
   );
 }

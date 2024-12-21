@@ -1,9 +1,8 @@
-import { Typography, Toolbar } from "@mui/material";
+import { Typography } from "@mui/material";
 
-function Dummy() {
+function Dummy(): JSX.Element {
   return (
     <div>
-      <Toolbar />
       <Typography sx={{ marginBottom: 2 }}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus
